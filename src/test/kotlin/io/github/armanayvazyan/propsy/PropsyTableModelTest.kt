@@ -1,13 +1,13 @@
-package io.github.armanayvazyan.propstableview
+package io.github.armanayvazyan.propsy
 
 import com.intellij.lang.properties.psi.PropertiesFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
-class PropsTableModelTest : BasePlatformTestCase() {
+class PropsyTableModelTest : BasePlatformTestCase() {
 
     fun testModelExposesKeyValueColumns() {
         val file = myFixture.configureByText("m.properties", "foo=1\nbar=2\n") as PropertiesFile
-        val model = PropsTableModel(project)
+        val model = PropsyTableModel(project)
         model.load(file)
         assertEquals(2, model.rowCount)
         assertEquals(2, model.columnCount)
@@ -17,7 +17,7 @@ class PropsTableModelTest : BasePlatformTestCase() {
 
     fun testSetValueAtWritesThrough() {
         val file = myFixture.configureByText("m.properties", "foo=1\n") as PropertiesFile
-        val model = PropsTableModel(project)
+        val model = PropsyTableModel(project)
         model.load(file)
         model.setValueAt("99", 0, 1)
         assertEquals("99", model.getValueAt(0, 1))
@@ -26,7 +26,7 @@ class PropsTableModelTest : BasePlatformTestCase() {
 
     fun testSetKeyAtRenames() {
         val file = myFixture.configureByText("m.properties", "foo=1\n") as PropertiesFile
-        val model = PropsTableModel(project)
+        val model = PropsyTableModel(project)
         model.load(file)
         model.setValueAt("renamed", 0, 0)
         assertEquals("renamed", model.getValueAt(0, 0))

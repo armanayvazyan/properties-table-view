@@ -1,4 +1,4 @@
-package io.github.armanayvazyan.propstableview
+package io.github.armanayvazyan.propsy
 
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
@@ -30,11 +30,11 @@ class PathEntry() {
 
 /**
  * Per-project storage for the named list of .properties files shown in the
- * Properties Table tool window. Legacy bare-path settings are migrated on load.
+ * Propsy tool window. Legacy bare-path settings are migrated on load.
  */
 @Service(Service.Level.PROJECT)
-@State(name = "PropsViewSettings", storages = [Storage("propsTableView.xml")])
-class PropsViewSettings : PersistentStateComponent<PropsViewSettings.State> {
+@State(name = "PropsySettings", storages = [Storage("propsy.xml")])
+class PropsySettings : PersistentStateComponent<PropsySettings.State> {
 
     class State {
         var entries: MutableList<PathEntry> = mutableListOf()
@@ -66,8 +66,8 @@ class PropsViewSettings : PersistentStateComponent<PropsViewSettings.State> {
 
     companion object {
         val CHANGED_TOPIC: Topic<Runnable> =
-            Topic.create("Properties Table View settings changed", Runnable::class.java)
+            Topic.create("Propsy settings changed", Runnable::class.java)
 
-        fun getInstance(project: Project): PropsViewSettings = project.service()
+        fun getInstance(project: Project): PropsySettings = project.service()
     }
 }

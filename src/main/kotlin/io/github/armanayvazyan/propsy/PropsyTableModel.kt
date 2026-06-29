@@ -1,4 +1,4 @@
-package io.github.armanayvazyan.propstableview
+package io.github.armanayvazyan.propsy
 
 import com.intellij.lang.properties.psi.PropertiesFile
 import com.intellij.openapi.project.Project
@@ -9,7 +9,7 @@ import javax.swing.table.AbstractTableModel
  * Edits are written straight through the [PropertiesFileBridge]; the owning view is
  * responsible for reloading after structural changes (add/delete/key rename).
  */
-class PropsTableModel(
+class PropsyTableModel(
     private val project: Project,
 ) : AbstractTableModel() {
 

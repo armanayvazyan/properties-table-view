@@ -1,11 +1,11 @@
 <idea-plugin>
-    <id>io.github.armanayvazyan.propstableview</id>
-    <name>Properties Table View</name>
-    <vendor>arman</vendor>
+    <id>io.github.armanayvazyan.propsy</id>
+    <name>Propsy</name>
+    <vendor>armanayvazyan</vendor>
 
     <description><![CDATA[
         Shows configured .properties files as an editable Key/Value table in a tool window.
-        Paths are configured per-project in Settings | Tools | Properties Table View.
+        Paths are configured per-project in Settings | Tools | Propsy.
         Edits preserve comments, blank lines and key order.
     ]]></description>
 
@@ -13,17 +13,17 @@
     <depends>com.intellij.properties</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceImplementation="io.github.armanayvazyan.propstableview.PropsViewSettings"/>
+        <projectService serviceImplementation="io.github.armanayvazyan.propsy.PropsySettings"/>
         <projectConfigurable
                 parentId="tools"
-                instance="io.github.armanayvazyan.propstableview.PropsViewConfigurable"
-                id="io.github.armanayvazyan.propstableview.settings"
-                displayName="Properties Table View"/>
+                instance="io.github.armanayvazyan.propsy.PropsyConfigurable"
+                id="io.github.armanayvazyan.propsy.settings"
+                displayName="Propsy"/>
         <toolWindow
-                id="Properties Table"
+                id="Propsy"
                 anchor="bottom"
-                icon="/icons/propsTableView.svg"
-                factoryClass="io.github.armanayvazyan.propstableview.PropsTableToolWindowFactory"/>
+                icon="/icons/propsy.svg"
+                factoryClass="io.github.armanayvazyan.propsy.PropsyToolWindowFactory"/>
     </extensions>
 
     <applicationListeners/>

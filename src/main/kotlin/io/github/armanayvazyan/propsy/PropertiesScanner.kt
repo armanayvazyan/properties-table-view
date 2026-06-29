@@ -1,4 +1,4 @@
-package io.github.armanayvazyan.propstableview
+package io.github.armanayvazyan.propsy
 
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project

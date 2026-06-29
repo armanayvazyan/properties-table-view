@@ -1,1 +1,1 @@
-rootProject.name = "properties-table-view"
+rootProject.name = "propsy"

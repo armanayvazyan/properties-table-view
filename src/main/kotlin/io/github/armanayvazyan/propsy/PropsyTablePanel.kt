@@ -1,4 +1,4 @@
-package io.github.armanayvazyan.propstableview
+package io.github.armanayvazyan.propsy
 
 import com.intellij.icons.AllIcons
 import com.intellij.lang.properties.psi.PropertiesFile
@@ -22,7 +22,7 @@ import javax.swing.ListSelectionModel
 /**
  * Tool window content: a path picker on top and an editable Key/Value table below.
  */
-class PropsTablePanel(
+class PropsyTablePanel(
     private val project: Project,
     parentDisposable: Disposable,
 ) : JPanel(BorderLayout()) {
@@ -30,7 +30,7 @@ class PropsTablePanel(
     private val comboModel = DefaultComboBoxModel<PathEntry>()
     private val combo = ComboBox(comboModel)
     private val statusLabel = JBLabel()
-    private val tableModel = PropsTableModel(project)
+    private val tableModel = PropsyTableModel(project)
     private val table = JBTable(tableModel)
 
     /** Guards combo mutations in [refreshAll] so the action listener does not fire mid-rebuild. */
@@ -61,7 +61,7 @@ class PropsTablePanel(
         add(decorated, BorderLayout.CENTER)
 
         project.messageBus.connect(parentDisposable)
-            .subscribe(PropsViewSettings.CHANGED_TOPIC, Runnable { refreshAll() })
+            .subscribe(PropsySettings.CHANGED_TOPIC, Runnable { refreshAll() })
 
         refreshAll()
     }
@@ -69,7 +69,7 @@ class PropsTablePanel(
     /** Repopulates the combo from settings, keeping the current selection if still present. */
     private fun refreshAll() {
         val previousPath = (combo.selectedItem as? PathEntry)?.path
-        val entries = PropsViewSettings.getInstance(project).entries
+        val entries = PropsySettings.getInstance(project).entries
         suppressComboEvents = true
         try {
             comboModel.removeAllElements()
@@ -85,7 +85,7 @@ class PropsTablePanel(
         }
         if (entries.isEmpty()) {
             tableModel.load(null)
-            statusLabel.text = "No paths configured. Add them in Settings | Tools | Properties Table View."
+            statusLabel.text = "No paths configured. Add them in Settings | Tools | Propsy."
         } else {
             reloadSelectedFile()
         }
@@ -111,7 +111,7 @@ class PropsTablePanel(
     private fun currentFileOrWarn(): PropertiesFile? {
         val file = tableModel.currentFile()
         if (file == null) {
-            Messages.showWarningDialog(project, "Select a resolvable properties file first.", "Properties Table View")
+            Messages.showWarningDialog(project, "Select a resolvable properties file first.", "Propsy")
         }
         return file
     }

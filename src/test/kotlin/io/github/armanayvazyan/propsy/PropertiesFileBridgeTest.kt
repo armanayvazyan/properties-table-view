@@ -1,4 +1,4 @@
-package io.github.armanayvazyan.propstableview
+package io.github.armanayvazyan.propsy
 
 import com.intellij.lang.properties.psi.PropertiesFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase

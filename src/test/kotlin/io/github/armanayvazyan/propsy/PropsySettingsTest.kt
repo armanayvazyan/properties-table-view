@@ -1,18 +1,18 @@
-package io.github.armanayvazyan.propstableview
+package io.github.armanayvazyan.propsy
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
-class PropsViewSettingsTest : BasePlatformTestCase() {
+class PropsySettingsTest : BasePlatformTestCase() {
 
     fun testEntriesRoundTripThroughState() {
-        val settings = PropsViewSettings.getInstance(project)
+        val settings = PropsySettings.getInstance(project)
         settings.entries = listOf(
             PathEntry("messages", "src/messages.properties"),
             PathEntry("app", "config/app.properties"),
         )
 
         val state = settings.state
-        val restored = PropsViewSettings()
+        val restored = PropsySettings()
         restored.loadState(state)
 
         assertEquals(
@@ -25,10 +25,10 @@ class PropsViewSettingsTest : BasePlatformTestCase() {
     }
 
     fun testLegacyPathsMigrateToEntries() {
-        val legacy = PropsViewSettings.State().apply {
+        val legacy = PropsySettings.State().apply {
             paths = mutableListOf("src/messages.properties", "config/app.properties")
         }
-        val settings = PropsViewSettings()
+        val settings = PropsySettings()
         settings.loadState(legacy)
 
         assertEquals(
@@ -43,7 +43,7 @@ class PropsViewSettingsTest : BasePlatformTestCase() {
     }
 
     fun testEntriesGetterReturnsDefensiveCopy() {
-        val settings = PropsViewSettings.getInstance(project)
+        val settings = PropsySettings.getInstance(project)
         settings.entries = listOf(PathEntry("a", "a.properties"))
         val first = settings.entries
         settings.entries = listOf(PathEntry("a", "a.properties"), PathEntry("b", "b.properties"))

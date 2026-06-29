@@ -1,4 +1,4 @@
-package io.github.armanayvazyan.propstableview
+package io.github.armanayvazyan.propsy
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -23,16 +23,16 @@ import javax.swing.ListSelectionModel
 import javax.swing.table.AbstractTableModel
 
 /**
- * Settings page under Settings | Tools | Properties Table View.
+ * Settings page under Settings | Tools | Propsy.
  * Onboarding text plus an editable Name/Path table of the configured files.
  */
-class PropsViewConfigurable(private val project: Project) : Configurable {
+class PropsyConfigurable(private val project: Project) : Configurable {
 
     private val model = EntriesTableModel(emptyList())
     private val table = JBTable(model)
     private var panel: JComponent? = null
 
-    override fun getDisplayName(): String = "Properties Table View"
+    override fun getDisplayName(): String = "Propsy"
 
     override fun createComponent(): JComponent {
         table.selectionModel.selectionMode = ListSelectionModel.SINGLE_SELECTION
@@ -42,7 +42,7 @@ class PropsViewConfigurable(private val project: Project) : Configurable {
 
         val header = JBLabel(
             "<html><body style='width:480px'>" +
-                "Choose which <b>.properties</b> files appear in the Properties Table tool window. " +
+                "Choose which <b>.properties</b> files appear in the Propsy tool window. " +
                 "Click <b>Scan</b> to auto-discover every <code>.properties</code> file in your modules, " +
                 "or <b>+</b> to add one manually. Edit the <b>Name</b> column to label each file — " +
                 "that name is what the tool window shows." +
@@ -111,16 +111,16 @@ class PropsViewConfigurable(private val project: Project) : Configurable {
     }
 
     override fun isModified(): Boolean =
-        model.items() != PropsViewSettings.getInstance(project).entries
+        model.items() != PropsySettings.getInstance(project).entries
 
     override fun apply() {
-        val settings = PropsViewSettings.getInstance(project)
+        val settings = PropsySettings.getInstance(project)
         settings.entries = model.items()
-        project.messageBus.syncPublisher(PropsViewSettings.CHANGED_TOPIC).run()
+        project.messageBus.syncPublisher(PropsySettings.CHANGED_TOPIC).run()
     }
 
     override fun reset() {
-        model.replaceAll(PropsViewSettings.getInstance(project).entries)
+        model.replaceAll(PropsySettings.getInstance(project).entries)
     }
 
     /** Two-column model: editable Name (0), read-only Path (1). */
