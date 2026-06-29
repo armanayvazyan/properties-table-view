@@ -22,6 +22,7 @@
         <toolWindow
                 id="Properties Table"
                 anchor="bottom"
+                icon="/icons/propsTableView.svg"
                 factoryClass="io.github.armanayvazyan.propstableview.PropsTableToolWindowFactory"/>
     </extensions>
 
