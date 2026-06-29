@@ -64,16 +64,6 @@ class PropsViewSettings : PersistentStateComponent<PropsViewSettings.State> {
             myState.entries = value.map { PathEntry(it.name, it.path) }.toMutableList()
         }
 
-    /**
-     * Transitional path-only view kept until [PropsTablePanel] migrates to [entries].
-     * Setting it names each entry by its filename.
-     */
-    var paths: List<String>
-        get() = myState.entries.map { it.path }
-        set(value) {
-            entries = value.map { PathEntry(it.substringAfterLast('/'), it) }
-        }
-
     companion object {
         val CHANGED_TOPIC: Topic<Runnable> =
             Topic.create("Properties Table View settings changed", Runnable::class.java)

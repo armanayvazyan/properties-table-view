@@ -9,6 +9,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.Messages
+import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.table.JBTable
@@ -26,7 +27,7 @@ class PropsTablePanel(
     parentDisposable: Disposable,
 ) : JPanel(BorderLayout()) {
 
-    private val comboModel = DefaultComboBoxModel<String>()
+    private val comboModel = DefaultComboBoxModel<PathEntry>()
     private val combo = ComboBox(comboModel)
     private val statusLabel = JBLabel()
     private val tableModel = PropsTableModel(project)
@@ -40,6 +41,7 @@ class PropsTablePanel(
         table.setShowGrid(true)
 
         combo.addActionListener { if (!suppressComboEvents) reloadSelectedFile() }
+        combo.renderer = SimpleListCellRenderer.create("") { it.name.ifBlank { it.path } }
 
         val top = JPanel(BorderLayout())
         top.border = JBUI.Borders.empty(4)
@@ -66,21 +68,22 @@ class PropsTablePanel(
 
     /** Repopulates the combo from settings, keeping the current selection if still present. */
     private fun refreshAll() {
-        val previous = combo.selectedItem as? String
-        val paths = PropsViewSettings.getInstance(project).paths
+        val previousPath = (combo.selectedItem as? PathEntry)?.path
+        val entries = PropsViewSettings.getInstance(project).entries
         suppressComboEvents = true
         try {
             comboModel.removeAllElements()
-            comboModel.addAll(paths)
+            entries.forEach { comboModel.addElement(it) }
             when {
-                paths.isEmpty() -> combo.selectedItem = null
-                previous != null && paths.contains(previous) -> combo.selectedItem = previous
+                entries.isEmpty() -> combo.selectedItem = null
+                previousPath != null && entries.any { it.path == previousPath } ->
+                    combo.selectedItem = entries.first { it.path == previousPath }
                 else -> combo.selectedIndex = 0
             }
         } finally {
             suppressComboEvents = false
         }
-        if (paths.isEmpty()) {
+        if (entries.isEmpty()) {
             tableModel.load(null)
             statusLabel.text = "No paths configured. Add them in Settings | Tools | Properties Table View."
         } else {
@@ -88,7 +91,7 @@ class PropsTablePanel(
         }
     }
 
-    private fun currentPath(): String? = combo.selectedItem as? String
+    private fun currentPath(): String? = (combo.selectedItem as? PathEntry)?.path
 
     private fun reloadSelectedFile() {
         val path = currentPath() ?: run {
