@@ -62,12 +62,14 @@ intellijPlatform {
     }
 
     pluginVerification {
-        // ToolWindowFactory's default methods (getAnchor/getIcon/manage) are @Internal in 252;
-        // Kotlin auto-generates bridge overrides we can't avoid. Don't fail CI on that.
-        // Keep the plugin's default fatal levels, minus INTERNAL_API_USAGES.
+        // Our own code uses no @Internal APIs (see DotEnvPlugin / PropsyConfigurable), so fail
+        // CI on internal usage. ToolWindowFactory's getAnchor/getIcon/manage are @Experimental
+        // and isApplicable/isDoNotActivateOnStart @Deprecated — Kotlin auto-generates bridge
+        // overrides we can't avoid, so those levels stay out of the fatal set.
         failureLevel = listOf(
             org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.COMPATIBILITY_PROBLEMS,
             org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.OVERRIDE_ONLY_API_USAGES,
+            org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.INTERNAL_API_USAGES,
         )
     }
 }

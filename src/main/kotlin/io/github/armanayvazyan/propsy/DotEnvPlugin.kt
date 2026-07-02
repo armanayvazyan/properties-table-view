@@ -1,6 +1,6 @@
 package io.github.armanayvazyan.propsy
 
-import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.ide.plugins.PluginManager
 import com.intellij.openapi.extensions.PluginId
 
 /**
@@ -13,5 +13,5 @@ object DotEnvPlugin {
 
     /** True when the dotenv plugin is installed AND enabled (its backend is loaded). */
     fun isActive(): Boolean =
-        PluginManagerCore.getPlugin(PluginId.getId(ID))?.isEnabled == true
+        PluginManager.getInstance().findEnabledPlugin(PluginId.getId(ID)) != null
 }

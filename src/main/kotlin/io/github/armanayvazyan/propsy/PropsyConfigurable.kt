@@ -1,13 +1,12 @@
 package io.github.armanayvazyan.propsy
 
 import com.intellij.icons.AllIcons
-import com.intellij.ide.plugins.PluginManagerConfigurable
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
@@ -105,10 +104,10 @@ class PropsyConfigurable(private val project: Project) : Configurable {
     }
 
     private fun openDotEnvInMarketplace() {
-        ShowSettingsUtil.getInstance()
-            .showSettingsDialog(project, PluginManagerConfigurable::class.java) {
-                it.openMarketplaceTab(DotEnvPlugin.ID)
-            }
+        // Opens the ".env files support" (ru.adelf.idea.dotenv) Marketplace page in the
+        // browser. The in-IDE Marketplace tab API (PluginManagerConfigurable) is @Internal
+        // in 252+, so we use the public BrowserUtil instead. Plugin id 9525 is stable.
+        BrowserUtil.browse("https://plugins.jetbrains.com/plugin/9525--env-files-support")
     }
 
     private fun chooseAndAdd() {
