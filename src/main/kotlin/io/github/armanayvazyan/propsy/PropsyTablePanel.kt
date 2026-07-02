@@ -1,7 +1,6 @@
 package io.github.armanayvazyan.propsy
 
 import com.intellij.icons.AllIcons
-import com.intellij.lang.properties.psi.PropertiesFile
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -98,20 +97,20 @@ class PropsyTablePanel(
             tableModel.load(null)
             return
         }
-        val file = PropertiesFileBridge.resolve(project, path)
+        val file = PropsyFiles.resolve(project, path)
         if (file == null) {
             tableModel.load(null)
-            statusLabel.text = "Cannot resolve '$path' (missing or not a .properties file)."
+            statusLabel.text = "Cannot resolve '$path' (missing or not a supported .properties/.env file)."
         } else {
             tableModel.load(file)
             statusLabel.text = " "
         }
     }
 
-    private fun currentFileOrWarn(): PropertiesFile? {
+    private fun currentFileOrWarn(): ResolvedFile? {
         val file = tableModel.currentFile()
         if (file == null) {
-            Messages.showWarningDialog(project, "Select a resolvable properties file first.", "Propsy")
+            Messages.showWarningDialog(project, "Select a resolvable properties/.env file first.", "Propsy")
         }
         return file
     }
@@ -122,7 +121,7 @@ class PropsyTablePanel(
             project, "Property key:", "Add Property", null,
         )?.trim()
         if (key.isNullOrEmpty()) return
-        val added = PropertiesFileBridge.addEntry(project, file, key, "")
+        val added = file.addEntry(project, key, "")
         if (!added) {
             Messages.showWarningDialog(project, "Key '$key' already exists.", "Add Property")
             return
@@ -133,8 +132,9 @@ class PropsyTablePanel(
     private fun removeRow() {
         val row = table.selectedRow
         if (row < 0) return
+        val file = tableModel.currentFile() ?: return
         val entry = tableModel.entryAt(table.convertRowIndexToModel(row)) ?: return
-        PropertiesFileBridge.deleteEntry(project, entry.property)
+        file.deleteEntry(project, entry)
         reloadSelectedFile()
     }
 }

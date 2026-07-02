@@ -1,30 +1,29 @@
 package io.github.armanayvazyan.propsy
 
-import com.intellij.lang.properties.psi.PropertiesFile
 import com.intellij.openapi.project.Project
 import javax.swing.table.AbstractTableModel
 
 /**
- * Editable table model over a single [PropertiesFile]. Column 0 = key, column 1 = value.
- * Edits are written straight through the [PropertiesFileBridge]; the owning view is
- * responsible for reloading after structural changes (add/delete/key rename).
+ * Editable table model over a single resolved key/value file. Column 0 = key, column 1 = value.
+ * Edits are written straight through the backing [ResolvedFile]; the owning view reloads
+ * after structural changes (add/delete/key rename).
  */
 class PropsyTableModel(
     private val project: Project,
 ) : AbstractTableModel() {
 
-    private var file: PropertiesFile? = null
-    private var rows: List<PropertiesFileBridge.Entry> = emptyList()
+    private var file: ResolvedFile? = null
+    private var rows: List<PropsyEntry> = emptyList()
 
-    fun load(file: PropertiesFile?) {
+    fun load(file: ResolvedFile?) {
         this.file = file
-        rows = file?.let { PropertiesFileBridge.entries(it) } ?: emptyList()
+        rows = file?.entries() ?: emptyList()
         fireTableDataChanged()
     }
 
-    fun currentFile(): PropertiesFile? = file
+    fun currentFile(): ResolvedFile? = file
 
-    fun entryAt(row: Int): PropertiesFileBridge.Entry? = rows.getOrNull(row)
+    fun entryAt(row: Int): PropsyEntry? = rows.getOrNull(row)
 
     override fun getRowCount(): Int = rows.size
 
@@ -41,15 +40,16 @@ class PropsyTableModel(
 
     override fun setValueAt(aValue: Any?, rowIndex: Int, columnIndex: Int) {
         val entry = rows.getOrNull(rowIndex) ?: return
+        val f = file ?: return
         val text = aValue?.toString() ?: ""
         if (columnIndex == 0) {
             if (text.isBlank() || text == entry.key) return
-            PropertiesFileBridge.setKey(project, entry.property, text)
+            f.setKey(project, entry, text)
         } else {
             if (text == entry.value) return
-            PropertiesFileBridge.setValue(project, entry.property, text)
+            f.setValue(project, entry, text)
         }
-        // Re-read so cached key/value stay consistent with the PSI.
+        // Re-read so cached key/value stay consistent with the backing file.
         load(file)
     }
 }

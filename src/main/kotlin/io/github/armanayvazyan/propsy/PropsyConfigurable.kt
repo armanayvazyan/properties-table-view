@@ -95,7 +95,7 @@ class PropsyConfigurable(private val project: Project) : Configurable {
 
     private fun scanAndMerge() {
         val existing = model.paths()
-        val discovered = PropertiesScanner.scan(project).filter { it.path !in existing }
+        val discovered = PropsyFiles.discoverAll(project).filter { it.path !in existing }
         discovered.forEach { model.add(it) }
         val message = if (discovered.isEmpty()) {
             "No new .properties files found."

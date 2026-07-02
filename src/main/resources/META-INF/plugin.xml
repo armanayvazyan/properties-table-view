@@ -26,5 +26,15 @@
                 factoryClass="io.github.armanayvazyan.propsy.PropsyToolWindowFactory"/>
     </extensions>
 
+    <extensionPoints>
+        <extensionPoint name="backend"
+                        interface="io.github.armanayvazyan.propsy.PropsyBackend"
+                        dynamic="true"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="io.github.armanayvazyan.propsy">
+        <backend implementation="io.github.armanayvazyan.propsy.PropertiesBackend"/>
+    </extensions>
+
     <applicationListeners/>
 </idea-plugin>
