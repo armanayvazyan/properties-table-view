@@ -1,11 +1,13 @@
 package io.github.armanayvazyan.propsy
 
 import com.intellij.icons.AllIcons
+import com.intellij.ide.plugins.PluginManagerConfigurable
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.guessProjectDir
@@ -16,10 +18,14 @@ import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.UIUtil
 import java.awt.BorderLayout
+import java.awt.FlowLayout
+import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.ListSelectionModel
+import javax.swing.SwingConstants
 import javax.swing.table.AbstractTableModel
 
 /**
@@ -42,8 +48,10 @@ class PropsyConfigurable(private val project: Project) : Configurable {
 
         val header = JBLabel(
             "<html><body style='width:480px'>" +
-                "Choose which <b>.properties</b> and <b>.env</b> files appear in the Propsy tool window. " +
-                "Click <b>Scan</b> to auto-discover them across your modules, " +
+                "<b>Propsy</b> shows configured <b>.properties</b> and <b>.env</b> files as an editable " +
+                "Key/Value table in the bottom tool window. Edits are written straight to disk, " +
+                "preserving comments, blank lines and key order, with full undo.<br><br>" +
+                "Click <b>Scan</b> to auto-discover files across your modules, " +
                 "or <b>+</b> to add one manually. Edit the <b>Name</b> column to label each file — " +
                 "that name is what the tool window shows." +
                 "</body></html>",
@@ -56,19 +64,51 @@ class PropsyConfigurable(private val project: Project) : Configurable {
             .addExtraAction(object : DumbAwareAction(
                 "Scan",
                 "Scan modules for .properties and .env files",
-                AllIcons.Actions.Refresh,
+                AllIcons.Actions.Download,
             ) {
                 override fun actionPerformed(e: AnActionEvent) = scanAndMerge()
                 override fun getActionUpdateThread() = ActionUpdateThread.EDT
             })
             .createPanel()
 
+        val top = JPanel(BorderLayout())
+        top.add(header, BorderLayout.NORTH)
+        top.add(buildDotEnvStatusRow(), BorderLayout.SOUTH)
+
         val root = JPanel(BorderLayout())
-        root.add(header, BorderLayout.NORTH)
+        root.add(top, BorderLayout.NORTH)
         root.add(tablePanel, BorderLayout.CENTER)
         panel = root
         reset()
         return root
+    }
+
+    /**
+     * Status row for the optional `.env files support` plugin. Shows a subtle
+     * confirmation when active, or a note plus an Install button that opens the
+     * IDE's plugin Marketplace pre-searched for the dotenv plugin.
+     */
+    private fun buildDotEnvStatusRow(): JComponent {
+        val row = JPanel(FlowLayout(FlowLayout.LEFT, 4, 0))
+        row.border = JBUI.Borders.empty(0, 8, 8, 8)
+        if (DotEnvPlugin.isActive()) {
+            val ok = JBLabel(".env support enabled", AllIcons.General.InspectionsOK, SwingConstants.LEFT)
+            ok.foreground = UIUtil.getContextHelpForeground()
+            row.add(ok)
+        } else {
+            row.add(JBLabel(".env editing needs the \".env files support\" plugin."))
+            val install = JButton("Install…")
+            install.addActionListener { openDotEnvInMarketplace() }
+            row.add(install)
+        }
+        return row
+    }
+
+    private fun openDotEnvInMarketplace() {
+        ShowSettingsUtil.getInstance()
+            .showSettingsDialog(project, PluginManagerConfigurable::class.java) {
+                it.openMarketplaceTab(DotEnvPlugin.ID)
+            }
     }
 
     private fun chooseAndAdd() {
